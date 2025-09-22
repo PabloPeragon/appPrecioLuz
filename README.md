@@ -18,3 +18,20 @@ que puedas reducir al máximo tu factura mensual.
 
 Perfecta para los hogares que tengan el bono social o paguen la luz al precio del mercado que no tengan precio fijo, **Precio de la luz** se destaca por su sensillez visual y su
 simple configuración y rapided para saber que horas son las más baratas.
+
+# <div align= left>Características principales</div>
+
+<div><strong>Característica 1:</strong> App ligera sencilla.</div>
+<div><strong>Característica 2:</strong> Poca o ninguna configuracíon.</div>
+<div><strong>Característica 3:</strong> Secillez y facil de ver.</div>
+
+# <div align= left>Tecnologías utilizadas</div>
+<div><strong>- Lenguaje:</strong> Swift 6.2</div>
+<div><strong>- Framework:</strong> SwiftUI</div>
+<div><strong>- Arquitectura:</strong> MVVM-R</div>
+<div><strong>- Base de datos:</strong> Core Data</div>
+<div><strong>- Dependencias:</strong> KeyChain</div>
+<div><strong>- Networking:</strong> URLSession/API REST</div>
+
+# <div align= left>Instalación</div>
+Clonar repositorio en tu pc mac y abrir con xcode.
