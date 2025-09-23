@@ -35,3 +35,8 @@ simple configuración y rapided para saber que horas son las más baratas.
 
 # <div align= left>Instalación</div>
 Clonar repositorio en tu pc mac y abrir con xcode.
+
+# <div align= letf>Contacto</div>
+Para contacto para cualquier propuesta o mejora puedes ponerte en contacto conmigo.
+<div><strong>-Email:</strong> pabloperagongarrido@icloud.com</div>
+<div><strong>-LinKedIn:</strong> https://www.linkedin.com/in/pabloperagongarrido/</div>
