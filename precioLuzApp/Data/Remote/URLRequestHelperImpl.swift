@@ -23,12 +23,22 @@ final class URLRequestHelperImpl: URLRequestHelperProtocol {
         //formato de fechas
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(identifier: "Europe/Madrid")
         let dateString = formatter.string(from: date)
         
-            components.queryItems = [
-            .init(name: "start_date", value: "\(dateString)T00:00:00Z"),
-            .init(name: "end_date", value: "\(dateString)T23:59:59Z")
-        ]
+        // En agosto es +02:00 (Horario de verano
+        // En invierno sería +01:00
+        let timeZoneOffset = TimeZone(identifier: "Europe/Madrid")?.secondsFromGMT() ?? 7200
+        let offsetHours = timeZoneOffset / 3600
+        let offsetString = String(format: "%+03d:00", offsetHours)
+        
+        
+        
+        components.queryItems = [
+                .init(name: "start_date", value: "\(dateString)T00:00:00\(offsetString)"),
+                .init(name: "end_date", value: "\(dateString)T23:59:59\(offsetString)")
+            ]
+
         
         guard let url = components.url else {
             print("Error while creating components url")
@@ -63,4 +73,3 @@ final class URLRequestHelperImpl: URLRequestHelperProtocol {
         return urlResquest
     }
 }
-    

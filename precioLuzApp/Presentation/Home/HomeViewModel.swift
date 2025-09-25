@@ -144,5 +144,3 @@ final class HomeViewModel: ObservableObject {
         return "Error al cargar los datos"
     }
 }
-    
-   
