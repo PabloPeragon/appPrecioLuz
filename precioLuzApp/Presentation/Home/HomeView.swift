@@ -11,33 +11,6 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var selectedDate = Date()
     
-    /// The main content view for the Home screen.
-    ///
-    /// This computed property builds a `NavigationView` containing a `Form` with several sections:
-    /// - A geographic zone selector (`Picker`) bound to `viewModel.selectedGeoId`. Changing the selection
-    ///   triggers a reload of price data for the currently selected date.
-    /// - A date selector (`DatePicker`) limited to dates up to today, localized to Spanish (`es_ES`).
-    ///   Changing the date triggers a reload of price data for that date.
-    /// - A loading state section that shows a `ProgressView` while data is being fetched.
-    /// - An error section that displays any error messages reported by the `viewModel`.
-    /// - A "Precio Actual" section showing the current hour's price for the selected date and zone,
-    ///   or a placeholder message if unavailable.
-    /// - A "Estadísticas del Día" section with minimum, maximum, and average price statistics,
-    ///   shown only when data exists.
-    /// - A "Precios por Horas" section listing hourly prices for the selected zone, with time formatted
-    ///   monospaced and price color-coded by value.
-    ///
-    /// Additional behaviors:
-    /// - The navigation title is set to "Precio de la Luz" and displayed inline.
-    /// - Pull-to-refresh triggers an async fetch for the selected date.
-    /// - On first appearance, if there are no prices loaded, the view initiates a load for the selected date.
-    ///
-    /// Dependencies:
-    /// - Uses `HomeViewModel` as a `@StateObject` for data loading, formatting, and state management.
-    /// - Relies on helper methods from the view model such as `loadPrices(for:)`, `fetchPrices(for:)`,
-    ///   `currentHourPrice(_:)`, `formatTime(_:)`, and `getColorForPrice(_:)`.
-    ///
-    /// - Returns: A SwiftUI view hierarchy representing the Home screen UI.
     var body: some View {
         NavigationView {
             Form {
