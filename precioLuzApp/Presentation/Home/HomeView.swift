@@ -10,6 +10,25 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var selectedDate = Date()
+    @State private var now = Date()
+    
+    // Fecha máxima seleccionable: hasta hoy, o hasta mañana a partir de las 20:30
+    private var maxSelectableDate: Date {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: now)
+        let hour = components.hour ?? 0
+        let minute = components.minute ?? 0
+        let allowTomorrow = (hour > 20) || (hour == 20 && minute >= 30)
+
+        let todayStart = calendar.startOfDay(for: now)
+
+        if allowTomorrow {
+            let tomorrowStart = calendar.date(byAdding: .day, value: 1, to: todayStart) ?? now
+            return calendar.date(bySettingHour: 23, minute: 59, second: 59, of: tomorrowStart) ?? tomorrowStart
+        } else {
+            return calendar.date(bySettingHour: 23, minute: 59, second: 59, of: todayStart) ?? todayStart
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -32,7 +51,7 @@ struct HomeView: View {
                 Section("Fecha") {
                     DatePicker("Fecha:",
                                selection: $selectedDate,
-                               in: ...Date(),
+                               in: ...maxSelectableDate,
                                displayedComponents: [.date])
                     .datePickerStyle(.compact)
                     .environment(\.locale, Locale(identifier: "es_ES"))
@@ -82,12 +101,12 @@ struct HomeView: View {
                     Section("Estadísticas del Día") {
                         VStack(alignment: .leading, spacing: 8) {
                             if let minValue = viewModel.cheapestPriceValue {
-                                Text("Precio Min: \(minValue.value, specifier: "%.4f")€/kWh a las  \(viewModel.formatTime(minValue.datetime)) h")
+                                Text("Precio Min: \(minValue.value, specifier: "%.4f")€/kWh a las \(viewModel.formatTime(minValue.datetime)) h")
                                     .foregroundColor(.green)
                             }
                             
                             if let maxValue = viewModel.mostExpensivePriceValues {
-                                Text("Precio Max: \(maxValue.value, specifier: "%.4f")€/kWh a las  \(viewModel.formatTime(maxValue.datetime)) h")
+                                Text("Precio Max: \(maxValue.value, specifier: "%.4f")€/kWh a las \(viewModel.formatTime(maxValue.datetime)) h")
                                     .foregroundColor(.red)
                             }
                             
@@ -138,6 +157,19 @@ struct HomeView: View {
             .refreshable {
                 Task {
                     await viewModel.fetchPrices(for: selectedDate)
+                }
+            }
+            .task {
+                while !Task.isCancelled {
+                    await MainActor.run {
+                        now = Date()
+                        // Si la fecha seleccionada supera el máximo permitido (p.ej., antes de 20:30), la ajustamos
+                        if selectedDate > maxSelectableDate {
+                            let startOfAllowed = Calendar.current.startOfDay(for: maxSelectableDate)
+                            selectedDate = startOfAllowed
+                        }
+                    }
+                    try? await Task.sleep(nanoseconds: 30 * 1_000_000_000)
                 }
             }
             .onAppear {
