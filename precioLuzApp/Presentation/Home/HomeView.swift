@@ -17,8 +17,8 @@ struct HomeView: View {
                 // Selector de zona geográfica
                 Section("Zona Geográfica") {
                     Picker("Selecciona zona", selection: $viewModel.selectedGeoId) {
-                        ForEach(viewModel.geoZones.sorted(by: { $0.key < $1.key }), id: \.key) { id, name in
-                            Text(name).tag(id)
+                        ForEach(Array(viewModel.geoZones.keys).sorted(), id: \.self) { id in
+                            Text(viewModel.geoZones[id] ?? "Desconocida").tag(id)
                         }
                     }
                     .pickerStyle(.menu)
@@ -82,12 +82,12 @@ struct HomeView: View {
                     Section("Estadísticas del Día") {
                         VStack(alignment: .leading, spacing: 8) {
                             if let minValue = viewModel.cheapestPriceValue {
-                                Text("Precio Mínimo: \(minValue.value, specifier: "%.4f")€/kWh")
+                                Text("Precio Min: \(minValue.value, specifier: "%.4f")€/kWh a las  \(viewModel.formatTime(minValue.datetime)) h")
                                     .foregroundColor(.green)
                             }
                             
                             if let maxValue = viewModel.mostExpensivePriceValues {
-                                Text("Precio Máximo: \(maxValue.value, specifier: "%.4f")€/kWh")
+                                Text("Precio Max: \(maxValue.value, specifier: "%.4f")€/kWh a las  \(viewModel.formatTime(maxValue.datetime)) h")
                                     .foregroundColor(.red)
                             }
                             
@@ -106,14 +106,27 @@ struct HomeView: View {
                     // Lista de precios por horas (solo zona seleccionada)
                     Section("Precios por Horas - \(viewModel.geoZones[viewModel.selectedGeoId] ?? "Zona Desconocida")") {
                         ForEach(viewModel.prices, id: \.datetime) { item in
+                            let isMin = viewModel.cheapestPriceValue?.datetime == item.datetime
+                            let isMax = viewModel.mostExpensivePriceValues?.datetime == item.datetime
                             HStack {
                                 Text(viewModel.formatTime(item.datetime))
-                                    .font(.monospaced(.body)())
+                                    .font(.system(.body, design: .monospaced))
                                 Spacer()
-                                VStack(alignment: .trailing) {
+                                VStack(alignment: .trailing, spacing: 2) {
                                     Text("\(item.value, specifier: "%.4f")€/kWh")
                                         .foregroundColor(viewModel.getColorForPrice(item.value))
                                         .font(.system(.body, design: .monospaced))
+                                        .fontWeight((isMin || isMax) ? .semibold : .regular)
+                                    if isMin {
+                                        Text("Mínimo")
+                                            .font(.caption2)
+                                            .foregroundColor(.green)
+                                    }
+                                    if isMax {
+                                        Text("Máximo")
+                                            .font(.caption2)
+                                            .foregroundColor(.red)
+                                    }
                                 }
                             }
                         }
@@ -139,3 +152,4 @@ struct HomeView: View {
 #Preview {
     HomeView()
 }
+
